@@ -224,7 +224,8 @@ client's `docs/item-data.md`.
 - It reads the saved configuration, so changes which aren't saved yet in the
   admin panel aren't part of it.
 - The file names the item fields it carries in its `fields` list; the client
-  keeps its own values of the other fields.
+  keeps its own values of the other fields. So far it carries the item size
+  (`width`, `height`).
 
 The admin panel shouldn't be reachable from the internet for this either: keep
 it on localhost, behind a VPN or a firewall.

@@ -49,9 +49,14 @@ public static class ItemExchangeExport
     public const int MaximumNumber = 511;
 
     /// <summary>
-    /// Gets the item fields the file carries, in the order the client writes them.
+    /// Gets the item fields the file carries, in the order the client writes them: the size (the
+    /// cells the item takes in an item grid).
     /// </summary>
-    internal static IReadOnlyList<ItemExchangeField> Fields { get; } = [];
+    internal static IReadOnlyList<ItemExchangeField> Fields { get; } =
+    [
+        new("width", (writer, item) => WriteUnlessZero(writer, "width", item.Width)),
+        new("height", (writer, item) => WriteUnlessZero(writer, "height", item.Height)),
+    ];
 
     /// <summary>
     /// Writes the exchange file of the items of the configuration.
@@ -119,5 +124,19 @@ public static class ItemExchangeExport
             .Where(item => item.Group <= MaximumGroup && item.Number is >= 0 and <= MaximumNumber)
             .OrderBy(item => item.Group)
             .ThenBy(item => item.Number);
+    }
+
+    /// <summary>
+    /// Writes a number field, unless it's 0, the client's default, which its files leave out.
+    /// </summary>
+    /// <param name="writer">The writer of the item.</param>
+    /// <param name="key">The client's key of the field.</param>
+    /// <param name="value">The value.</param>
+    private static void WriteUnlessZero(Utf8JsonWriter writer, string key, int value)
+    {
+        if (value != 0)
+        {
+            writer.WriteNumber(key, value);
+        }
     }
 }
